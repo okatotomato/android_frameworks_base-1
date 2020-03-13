@@ -19,6 +19,7 @@ package com.android.systemui;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.os.IBinder;
 import android.renderscript.Element;
 import android.renderscript.Allocation;
 import android.renderscript.ScriptIntrinsicBlur;
@@ -32,15 +33,15 @@ import android.util.Log;
 public class ImageUtilities {
 
 /* screenShot routine */
-    public static Bitmap screenshotSurface(Context context) {
+    public static Bitmap screenshotSurfaceBelow(Context context, IBinder stopLayer) {
         float BITMAP_SCALE = 0.35f;
         Bitmap bitmap;
         DisplayMetrics displayMetrics = new DisplayMetrics();
         Display defaultDisplay = ((WindowManager) context.getSystemService("window")).getDefaultDisplay();
         defaultDisplay.getRealMetrics(displayMetrics);
         int rotation = defaultDisplay.getRotation();
-        bitmap = SurfaceControl.screenshot(new Rect(), Math.round(displayMetrics.widthPixels * BITMAP_SCALE),
-                Math.round(displayMetrics.heightPixels * BITMAP_SCALE), false, rotation);
+        bitmap = SurfaceControl.screenshotBelow(new Rect(), stopLayer, Math.round(displayMetrics.widthPixels
+                * BITMAP_SCALE), Math.round(displayMetrics.heightPixels * BITMAP_SCALE), false, rotation);
         if (bitmap == null) {
             Log.e("ScreenShotHelper", "screenShotBitmap error bitmap is null");
             return null;
