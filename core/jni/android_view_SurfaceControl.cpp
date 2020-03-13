@@ -265,6 +265,45 @@ static jobject nativeScreenshot(JNIEnv* env, jclass clazz,
             capturedSecureLayers);
 }
 
+static jobject nativeScreenshotBelow(JNIEnv* env, jclass clazz,
+        jobject displayTokenObj, jobject stopLayerTokenObj, jobject sourceCropObj,
+        jint width, jint height, bool useIdentityTransform, int rotation,
+        bool captureSecureLayers) {
+    sp<IBinder> displayToken = ibinderForJavaObject(env, displayTokenObj);
+    sp<IBinder> stopLayerHandle = ibinderForJavaObject(env, stopLayerTokenObj);
+    if (displayToken == NULL) {
+        return NULL;
+    }
+    if (stopLayerHandle == NULL) {
+        return NULL;
+    }
+    const ui::ColorMode colorMode = SurfaceComposerClient::getActiveColorMode(displayToken);
+    const ui::Dataspace dataspace = pickDataspaceFromColorMode(colorMode);
+
+    Rect sourceCrop = rectFromObj(env, sourceCropObj);
+    sp<GraphicBuffer> buffer;
+    bool capturedSecureLayers = false;
+    status_t res = ScreenshotClient::captureBelow(displayToken, stopLayerHandle,
+            dataspace,
+            ui::PixelFormat::RGBA_8888,
+            sourceCrop, width, height,
+            useIdentityTransform, rotation, captureSecureLayers, &buffer, capturedSecureLayers);
+    if (res != NO_ERROR) {
+        return NULL;
+    }
+
+    const jint namedColorSpace = fromDataspaceToNamedColorSpaceValue(dataspace);
+    return env->CallStaticObjectMethod(gScreenshotGraphicBufferClassInfo.clazz,
+            gScreenshotGraphicBufferClassInfo.builder,
+            buffer->getWidth(),
+            buffer->getHeight(),
+            buffer->getPixelFormat(),
+            (jint)buffer->getUsage(),
+            (jlong)buffer.get(),
+            namedColorSpace,
+            capturedSecureLayers);
+}
+
 static jobject nativeCaptureLayers(JNIEnv* env, jclass clazz, jobject displayTokenObj,
         jobject layerHandleToken, jobject sourceCropObj, jfloat frameScale,
         jobjectArray excludeArray) {
@@ -1365,6 +1404,10 @@ static const JNINativeMethod sSurfaceControlMethods[] = {
             "(Landroid/os/IBinder;Landroid/graphics/Rect;IIZIZ)"
             "Landroid/view/SurfaceControl$ScreenshotGraphicBuffer;",
             (void*)nativeScreenshot },
+    {"nativeScreenshotBelow",
+            "(Landroid/os/IBinder;Landroid/os/IBinder;Landroid/graphics/Rect;IIZIZ)"
+            "Landroid/view/SurfaceControl$ScreenshotGraphicBuffer;",
+            (void*)nativeScreenshotBelow },
     {"nativeCaptureLayers",
             "(Landroid/os/IBinder;Landroid/os/IBinder;Landroid/graphics/Rect;"
             "F[Landroid/os/IBinder;)"
