@@ -96,6 +96,7 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
 import com.android.internal.util.EmergencyAffordanceManager;
+import com.android.internal.util.ScreenshotHelper;
 import com.android.internal.util.UserIcons;
 import com.android.internal.view.RotationPolicy;
 import com.android.internal.widget.LockPatternUtils;
@@ -163,6 +164,7 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
     private boolean mHasLockdownButton;
     private final boolean mShowSilentToggle;
     private final EmergencyAffordanceManager mEmergencyAffordanceManager;
+    private final ScreenshotHelper mScreenshotHelper;
     private final ActivityStarter mActivityStarter;
     private GlobalActionsPanelPlugin mPanelPlugin;
 
@@ -213,6 +215,7 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
                 R.bool.config_useFixedVolume);
 
         mEmergencyAffordanceManager = new EmergencyAffordanceManager(context);
+        mScreenshotHelper = new ScreenshotHelper(context);
 
         Dependency.get(ConfigurationController.class).addCallback(this);
 
@@ -760,11 +763,7 @@ public class GlobalActionsDialog implements DialogInterface.OnDismissListener,
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        WindowManagerGlobal.getWindowManagerService().takeOPScreenshot(1);
-                    } catch (RemoteException e) {
-                        Log.e(TAG, "Error while trying to take screenshot.", e);
-                    }
+                    mScreenshotHelper.takeScreenshot(1, true, true, mHandler, null);
                     MetricsLogger.action(mContext,
                             MetricsEvent.ACTION_SCREENSHOT_POWER_MENU);
                 }
