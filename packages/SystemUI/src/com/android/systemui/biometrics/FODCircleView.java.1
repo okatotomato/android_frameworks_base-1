@@ -384,12 +384,10 @@ public class FODCircleView extends ImageView {
     }
 
     private void updateStyle() {
-      //  mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
-       //         Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
-       mIsRecognizingAnimEnabled = false;
-        mSelectedIcon = 0; 
-		//Settings.System.getInt(mContext.getContentResolver(),
-               // Settings.System.FOD_ICON, 0);
+        mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
+        mSelectedIcon = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.FOD_ICON, 0);
         if (mFODAnimation != null) {
             mFODAnimation.update();
         }

@@ -16,6 +16,8 @@
 */
 -->
 <resources>
+
+    <dimen name="fod_animation_size">280dp</dimen>
     <!-- Amount to offset bottom of notification peek window from top of status bar. -->
     <dimen name="peek_window_y_offset">-12dp</dimen>
 
