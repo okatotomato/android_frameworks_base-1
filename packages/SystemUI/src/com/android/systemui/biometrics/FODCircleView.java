@@ -40,6 +40,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.util.Log;
 
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardSecurityModel.SecurityMode;
@@ -145,6 +146,7 @@ public class FODCircleView extends ImageView {
         public void onKeyguardVisibilityChanged(boolean showing) {
             mIsKeyguard = showing;
             updateStyle();
+	    Log.d("FINGER====", "visability");
             updatePosition();
             if (mFODAnimation != null) {
                 mFODAnimation.setAnimationKeyguard(mIsKeyguard);
@@ -157,11 +159,14 @@ public class FODCircleView extends ImageView {
             if (mIsKeyguard && mUpdateMonitor.isFingerprintDetectionRunning()) {
                 if (isPinOrPattern(mUpdateMonitor.getCurrentUser()) || !isBouncer) {
                     show();
+		    Log.d("FINGER===="," SHOWING- HIDE HIDE");
                 } else {
                     hide();
+		    Log.d("FINGER====", "HIDEING");
                 }
             } else {
                 hide();
+		Log.d("FINGER====", "hide");
             }
         }
 
@@ -359,11 +364,13 @@ public class FODCircleView extends ImageView {
     public void show() {
         if (!mUpdateMonitor.isScreenOn()) {
             // Keyguard is shown just after screen turning off
+	    Log.d("FINGER====", " on screen on update monitor");
             return;
         }
 
         if (mIsBouncer && !isPinOrPattern(mUpdateMonitor.getCurrentUser())) {
-            // Ignore show calls when Keyguard password screen is being shown
+            // Ignore show calls when Keyguard password screen is being show
+	    Log.d("FINGER====", "pin");
             return;
         }
 
@@ -386,8 +393,8 @@ public class FODCircleView extends ImageView {
     private void updateStyle() {
       //  mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
        //         Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
-       mIsRecognizingAnimEnabled = false;
-        mSelectedIcon = 0; 
+       mIsRecognizingAnimEnabled = true;
+        mSelectedIcon = 1; 
 		//Settings.System.getInt(mContext.getContentResolver(),
                // Settings.System.FOD_ICON, 0);
         if (mFODAnimation != null) {
